@@ -22,3 +22,15 @@ class ResponseUserSchema(UserBaseSchema):
     id: UUID
     created_at: datetime
     updated_at: datetime
+    is_active: bool
+
+
+class UpdateUserSchema(BaseModel):
+    first_name: str
+    last_name: str
+    sex: str
+    birthday: datetime
+
+
+class ResponseDeleteUserSchema(BaseModel):
+    id: UUID

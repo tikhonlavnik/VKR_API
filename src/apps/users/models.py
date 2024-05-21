@@ -21,3 +21,4 @@ class Users(Base):
     created_at = Column(DateTime(), nullable=False, default=datetime.now())
     updated_at = Column(DateTime(), nullable=False, default=datetime.now())
     is_admin = Column(Boolean(), default=False)
+    is_active = Column(Boolean(), default=True)
