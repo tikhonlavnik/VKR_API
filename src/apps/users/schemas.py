@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -29,8 +29,15 @@ class UpdateUserSchema(BaseModel):
     first_name: str
     last_name: str
     sex: str
-    birthday: datetime
+    birthday: date
 
 
 class ResponseDeleteUserSchema(BaseModel):
     id: UUID
+
+
+class SystemUserSchema(ResponseDeleteUserSchema):
+    username: str
+    password: str
+    is_admin: bool
+    is_active: bool

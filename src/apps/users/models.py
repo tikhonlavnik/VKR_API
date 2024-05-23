@@ -1,8 +1,7 @@
-# from uuid import UUID
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, UUID, String, DateTime, Boolean
+from sqlalchemy import Column, UUID, String, DateTime, Boolean, Date
 
 from src.database import Base
 
@@ -17,8 +16,8 @@ class Users(Base):
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     sex = Column(String(6), nullable=False)
-    birthday = Column(DateTime(), nullable=False)
-    created_at = Column(DateTime(), nullable=False, default=datetime.now())
-    updated_at = Column(DateTime(), nullable=False, default=datetime.now())
+    birthday = Column(Date(), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now())
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now())
     is_admin = Column(Boolean(), default=False)
     is_active = Column(Boolean(), default=True)
