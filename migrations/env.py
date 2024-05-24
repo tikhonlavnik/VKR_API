@@ -21,6 +21,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from src.database import Base  # Импортируйте вашу базу
 from src.apps.users.models import Users  # Импортируйте вашу модель
+from src.apps.telecom_metrics.models import TelecomResults, TaskInfo
 
 target_metadata = Base.metadata
 

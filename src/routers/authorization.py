@@ -5,7 +5,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.utils.auth_config import settings
+from auth_config import settings
+from config import Config
 from src.apps.authorization.service import AuthService
 from src.database import get_session
 
@@ -30,7 +31,9 @@ class AuthViews:
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
+        access_token_expires = timedelta(
+            minutes=int(Config.ACCESS_TOKEN_EXPIRE_MINUTES)
+        )
         access_token = self.service.create_access_token(
             data={"sub": user.username}, expires_delta=access_token_expires
         )

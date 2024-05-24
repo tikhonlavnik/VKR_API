@@ -3,8 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+from config import Config
 
-DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/vkr_db"
+DATABASE_URL = Config.DATABASE_URL
 
 
 engine = create_async_engine(DATABASE_URL, echo=True)

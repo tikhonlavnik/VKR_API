@@ -8,7 +8,8 @@ from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
-from src.utils.auth_config import settings
+from auth_config import settings
+from config import Config
 from src.apps.authorization.schemas import TokenData
 from src.apps.users.models import Users
 from src.apps.users.service import UsersService
@@ -29,11 +30,11 @@ class AuthService:
             expire = datetime.now() + expires_delta
         else:
             expire = datetime.now() + timedelta(
-                minutes=settings.access_token_expire_minutes
+                minutes=Config.ACCESS_TOKEN_EXPIRE_MINUTES
             )
         to_encode.update({"expire": expire.timestamp()})
         encoded_jwt = jwt.encode(
-            to_encode, settings.secret_key, algorithm=settings.algorithm
+            to_encode, Config.SECRET_KEY, algorithm=Config.ALGORITHM
         )
         return encoded_jwt
 
@@ -62,9 +63,7 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(
-            token, settings.secret_key, algorithms=[settings.algorithm]
-        )
+        payload = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
