@@ -11,7 +11,7 @@ from src.apps.users.models import Users
 from src.celery.managers.telecom_manager import TelecomService
 
 
-class AuthViews:
+class TelecomViews:
     def __init__(self, service: TelecomService):
         self.service = service
         self.router = APIRouter(prefix="/api", tags=["Telecom metrics"])
@@ -45,7 +45,7 @@ class AuthViews:
         task = await self.service.calculate_packet_loss(
             current_user.id, request.task_name, request.samples
         )
-        return task
+        return await task
 
     async def get_result(self, task_id: str):
         result = await self.service.get_result(task_id)
@@ -55,4 +55,4 @@ class AuthViews:
 
 
 telecom_service = TelecomService()
-telecom_views = AuthViews(telecom_service)
+telecom_views = TelecomViews(telecom_service)
