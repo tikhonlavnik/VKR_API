@@ -16,4 +16,4 @@
 5. Для запуска приложения:
 ```uvicorn main:app --reload```
 6. Для запуска Celery:
-```celery -A src.celery.app.celery_app worker --loglevel=info```
+```celery -A src.celery.app worker --loglevel=INFO -P eventlet -E```

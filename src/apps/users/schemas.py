@@ -11,7 +11,7 @@ class UserBaseSchema(BaseModel):
     last_name: str
     sex: str
     birthday: datetime
-    is_admin: bool
+    is_admin: bool = False
 
 
 class CreateRequestUserSchema(UserBaseSchema):

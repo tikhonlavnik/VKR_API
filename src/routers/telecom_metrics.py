@@ -1,12 +1,12 @@
 from fastapi import HTTPException, Depends, APIRouter
 
-# from celery_manager import CeleryManager
-# from models import Users, get_session, get_current_user
-
 from src.apps.authorization.service import get_current_user
-from src.apps.telecom_metrics.schemas import CalculateRequest
+from src.apps.telecom_metrics.schemas import (
+    CalculateRequest,
+    CalculateResponse,
+    CalculateResult,
+)
 
-# from src.apps.telecom_metrics.service import TelecomService
 from src.apps.users.models import Users
 from src.celery.managers.telecom_manager import TelecomService
 
@@ -28,9 +28,8 @@ class TelecomViews:
     async def calculate_latency(
         self,
         request: CalculateRequest,
-        # db: AsyncSession = Depends(get_session),
         current_user: Users = Depends(get_current_user),
-    ):
+    ) -> CalculateResponse:
         task = await self.service.calculate_latency(
             current_user.id, request.task_name, request.samples
         )
@@ -39,19 +38,22 @@ class TelecomViews:
     async def calculate_packet_loss(
         self,
         request: CalculateRequest,
-        # db: AsyncSession = Depends(get_session),
         current_user: Users = Depends(get_current_user),
-    ):
+    ) -> CalculateResponse:
         task = await self.service.calculate_packet_loss(
             current_user.id, request.task_name, request.samples
         )
         return await task
 
-    async def get_result(self, task_id: str):
+    async def get_result(
+        self,
+        task_id: str,
+        current_user: Users = Depends(get_current_user),
+    ) -> CalculateResult:
         result = await self.service.get_result(task_id)
         if result is None:
             raise HTTPException(status_code=404, detail="Task not found")
-        return {"result": result}
+        return result
 
 
 telecom_service = TelecomService()

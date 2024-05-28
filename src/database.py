@@ -1,3 +1,4 @@
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
@@ -16,6 +17,11 @@ async_session = sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False,
 )
+
+
+celery_engine = create_engine(DATABASE_URL, echo=True)
+CelerySession = sessionmaker(bind=celery_engine)
+celery_session = CelerySession()
 
 
 async def get_session() -> AsyncSession:

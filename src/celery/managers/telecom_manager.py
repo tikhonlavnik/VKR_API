@@ -1,24 +1,25 @@
-# from tasks import calculate_latency, calculate_packet_loss
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
-
-# from models import TaskInfo
+from sqlalchemy import select
 from datetime import datetime
+
 import uuid
 
-from src.apps.telecom_metrics.models import TaskInfo
-from src.celery.telecom_tasks.tasks import calculate_latency, calculate_packet_loss
+from src.apps.telecom_metrics.models import TaskInfo, TelecomResults
+from src.celery.telecom_tasks.tasks import (
+    calculate_latency_result,
+    calculate_packet_loss_result,
+)
 from src.database import async_session
 
 
 class TelecomService:
     def __init__(self):
         self.tasks = {
-            "latency": calculate_latency,
-            "packet_loss": calculate_packet_loss,
+            "latency": calculate_latency_result,
+            "packet_loss": calculate_packet_loss_result,
         }
 
-    async def record_task_info(self, user_id, task_id, task_name, task_type):
+    @staticmethod
+    async def record_task_info(user_id, task_id, task_name, task_type):
         async with async_session() as session:
             async with session.begin():
                 task_info = TaskInfo(
@@ -34,15 +35,20 @@ class TelecomService:
     async def calculate_latency(self, user_id, task_name, samples):
         task_id = str(uuid.uuid4())
         await self.record_task_info(user_id, task_id, task_name, "latency")
-        result = self.tasks["latency"].delay(user_id, samples, task_id)
+        result = calculate_latency_result.delay(samples, task_id)
         return {"task_id": task_id, "celery_id": result.id}
 
     async def calculate_packet_loss(self, user_id, task_name, samples):
         task_id = str(uuid.uuid4())
         await self.record_task_info(user_id, task_id, task_name, "packet_loss")
-        result = self.tasks["packet_loss"].delay(user_id, samples, task_id)
+        result = self.tasks["packet_loss"].delay(samples, task_id)
         return {"task_id": task_id, "celery_id": result.id}
 
-    async def get_result(self, task_id):
-        result = calculate_latency.AsyncResult(task_id)
-        return result.result
+    @staticmethod
+    async def get_result(task_id):
+        async with async_session() as session:
+            async with session.begin():
+                stmt = select(TelecomResults).where(TelecomResults.id == task_id)
+                result = await session.execute(stmt)
+                result_record = result.scalars().first()
+        return result_record

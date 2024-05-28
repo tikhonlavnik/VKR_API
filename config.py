@@ -10,3 +10,4 @@ class Config:
     ALGORITHM: str = os.getenv("ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
     REDIS_URL: str = os.getenv("REDIS_URL")
+    CELERY_DATABASE_URL: str = os.getenv("CELERY_DATABASE_URL")
